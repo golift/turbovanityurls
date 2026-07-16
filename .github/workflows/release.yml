@@ -27,7 +27,7 @@ jobs:
         with:
           # we need the whole thing so we can count commits.
           fetch-depth: '0'
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: stable
       - name: make-release
