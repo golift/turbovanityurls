@@ -83,6 +83,9 @@ paths:
   /datacounter:
     repo: https://github.com/golift/datacounter
     redir: https://github.com/golift/datacounter
+  /codesign:
+    repo: https://github.com/golift/codesign
+    redir: https://github.com/golift/codesign
 
   # No repos.
   # Giving an item a "name" puts it in the Applications list.
