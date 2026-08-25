@@ -39,6 +39,7 @@ type Flags struct {
 	ShowVer    bool
 }
 
+// Config is the application config: vanity paths plus optional badgedata.
 type Config struct {
 	*handler.Config `yaml:",inline"`
 
@@ -48,6 +49,7 @@ type Config struct {
 
 const defaultTimeout = 15 * time.Second
 
+// ParseFlags parses CLI flags from args.
 func ParseFlags(args []string) *Flags {
 	flag := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	f := &Flags{ListenAddr: ":" + os.Getenv("PORT")}
@@ -71,6 +73,7 @@ func ParseFlags(args []string) *Flags {
 	return f
 }
 
+// Setup loads the config file and registers HTTP handlers.
 func Setup(flags *Flags) (*Config, error) {
 	config := &Config{flags: flags}
 
@@ -93,6 +96,7 @@ func Setup(flags *Flags) (*Config, error) {
 	return config, nil
 }
 
+// ParseConfig reads and unmarshals the YAML config file.
 func (c *Config) ParseConfig(configPath string) error {
 	_, err := os.Stat(configPath)
 	if os.IsNotExist(err) && configPath == DefaultConfFile {
@@ -100,7 +104,7 @@ func (c *Config) ParseConfig(configPath string) error {
 		configPath = "config.yaml"
 	}
 
-	data, err := os.ReadFile(configPath)
+	data, err := os.ReadFile(configPath) //nolint:gosec // expected file inclusion.
 	if err != nil {
 		return fmt.Errorf("reading config file: %w", err)
 	}
@@ -121,6 +125,7 @@ func (c *Config) ParseConfig(configPath string) error {
 	return nil
 }
 
+// Start runs the HTTP server until it exits.
 func (c *Config) Start() error {
 	if strings.HasPrefix(c.flags.ListenAddr, ":") {
 		// A message so you know when it's started; a clickable link for dev'ing.

@@ -229,7 +229,7 @@ func TestHandler(t *testing.T) {
 
 		data, err := io.ReadAll(resp.Body)
 
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		s.Close()
 
 		if resp.StatusCode != http.StatusOK {

@@ -2,36 +2,35 @@ version: '2'
 linters:
   default: all
   disable:
-    - exhaustruct
-    - exhaustruct_v5
-    - mnd
-    - nlreturn
-    - tagliatelle
-    - varnamelen
-    - goconst # meh
+    - varnamelen # eventually
+    - nlreturn # no need
+    - exhaustruct_v5 # very noisy
     - gomodguard # deprecated
     - wsl # deprecated
-    - depguard
+    - exhaustruct # deprecated
+
+  settings:
+    depguard:
+      rules:
+        main:
+          files:
+            - $all
+          allow:
+            - $gostd
+            - golift.io
+            - gopkg.in/yaml.v3
+    tagliatelle:
+      case:
+        rules:
+          yaml: snake
   exclusions:
-    generated: lax
-    presets:
-      - comments
-      - common-false-positives
-      - legacy
-      - std-error-handling
-    paths:
-      - third_party$
-      - builtin$
-      - examples$
+    rules:
+      - path: .+_test.go
+        linters:
+          - goconst
 formatters:
   enable:
     - gci
     - gofmt
     - gofumpt
     - goimports
-  exclusions:
-    generated: lax
-    paths:
-      - third_party$
-      - builtin$
-      - examples$

@@ -101,6 +101,7 @@ type PathReq struct {
 	LogoURL    string
 }
 
+// New builds a vanity-URL handler from c.
 func New(c *Config) (*Handler, error) {
 	h := &Handler{Config: c}
 
