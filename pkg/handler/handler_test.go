@@ -284,7 +284,7 @@ func getTestConfig(data []byte) *handler.Config {
 }
 
 func findMeta(data []byte, name string) string {
-	var sep []byte
+	sep := make([]byte, 0, len(name)+11)
 
 	sep = append(sep, `<meta name="`...)
 	sep = append(sep, name...)
@@ -297,12 +297,12 @@ func findMeta(data []byte, name string) string {
 
 	content := data[i+len(sep):]
 
-	j := bytes.IndexByte(content, '"')
-	if j == -1 {
+	before, _, ok := bytes.Cut(content, []byte{'"'})
+	if !ok {
 		return ""
 	}
 
-	return string(content[:j])
+	return string(before)
 }
 
 func TestPathConfigSetFind(t *testing.T) {

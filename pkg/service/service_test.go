@@ -66,7 +66,7 @@ func TestParseConfig(t *testing.T) {
 	}}
 
 	for _, test := range tests {
-		f, err := os.CreateTemp("", "*.conf")
+		f, err := os.CreateTemp(t.TempDir(), "*.conf")
 		if err != nil {
 			t.Errorf("writing test temporary file failed\n%s", err)
 		}
@@ -74,7 +74,8 @@ func TestParseConfig(t *testing.T) {
 		_ = f.Close()
 
 		defer func() {
-			if err := syscall.Unlink(f.Name()); err != nil {
+			err := syscall.Unlink(f.Name())
+			if err != nil {
 				t.Errorf("error deleting test file\n%v\n%s", err, f.Name())
 			}
 		}()

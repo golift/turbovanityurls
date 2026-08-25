@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-var Funcs = map[string]interface{}{
+var Funcs = map[string]any{
 	"TrimPrefix":  strings.TrimPrefix,
 	"currentYear": func() string { return strconv.Itoa(time.Now().Year()) },
 	// Add more if you need them.

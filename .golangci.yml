@@ -1,13 +1,37 @@
+version: '2'
 linters:
-  enable-all: true
+  default: all
   disable:
-  # deprecated
-    - execinquery
-    - gomnd
-  # unused
     - exhaustruct
+    - exhaustruct_v5
+    - mnd
     - nlreturn
     - tagliatelle
     - varnamelen
-run:
-  timeout: 5m
+    - goconst # meh
+    - gomodguard # deprecated
+    - wsl # deprecated
+    - depguard
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

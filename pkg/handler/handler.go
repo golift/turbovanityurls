@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// govanityurls serves Go vanity URLs.
+// Package handler for golift.io/turbovanityurls serves Go vanity URLs.
 package handler
 
 import (
@@ -92,11 +92,12 @@ var (
 // Host, LogoURL, and IndexTitle come unset.
 // This struct is passed into the vanity template.
 type PathReq struct {
+	*PathConfig
+
 	Host       string
 	Subpath    string
 	IndexTitle string
 	LogoURL    string
-	*PathConfig
 }
 
 func New(c *Config) (*Handler, error) {
@@ -116,7 +117,8 @@ func New(c *Config) (*Handler, error) {
 
 		h.Paths[p].setRepoCacheControl(h.CacheAge)
 
-		if err := h.Paths[p].setRepoVCS(); err != nil {
+		err := h.Paths[p].setRepoVCS()
+		if err != nil {
 			return nil, err
 		}
 
@@ -189,7 +191,7 @@ func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) { //nolint:cyclop
-	switch pc := h.PathConfigs.Find(r.URL.Path); {
+	switch pc := h.Find(r.URL.Path); {
 	case pc.PathConfig == nil && r.URL.Path != "/":
 		// Unknown URI
 		h.NotFound(w, r)
@@ -198,7 +200,8 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) { //nolint:c
 		http.Redirect(w, r, h.RedirIndex, http.StatusFound)
 	case pc.PathConfig == nil:
 		// Index page template.
-		if err := templates.Index.Execute(w, &h.Config); err != nil {
+		err := templates.Index.Execute(w, &h.Config)
+		if err != nil {
 			http.Error(w, "cannot render the page", http.StatusInternalServerError)
 		}
 	case pc.RedirectablePath():
@@ -221,7 +224,8 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) { //nolint:c
 			templ = templates.GoGet
 		}
 
-		if err := templ.Execute(w, &pc); err != nil {
+		err := templ.Execute(w, &pc)
+		if err != nil {
 			http.Error(w, "cannot render the page", http.StatusInternalServerError)
 		}
 	}

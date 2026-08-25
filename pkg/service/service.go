@@ -41,8 +41,9 @@ type Flags struct {
 
 type Config struct {
 	*handler.Config `yaml:",inline"`
-	BDPath          string `yaml:"bd_path,omitempty"`
-	flags           *Flags
+
+	BDPath string `yaml:"bd_path,omitempty"`
+	flags  *Flags
 }
 
 const defaultTimeout = 15 * time.Second
@@ -72,7 +73,9 @@ func ParseFlags(args []string) *Flags {
 
 func Setup(flags *Flags) (*Config, error) {
 	config := &Config{flags: flags}
-	if err := config.ParseConfig(flags.ConfigPath); err != nil {
+
+	err := config.ParseConfig(flags.ConfigPath)
+	if err != nil {
 		return nil, err
 	}
 
@@ -91,7 +94,8 @@ func Setup(flags *Flags) (*Config, error) {
 }
 
 func (c *Config) ParseConfig(configPath string) error {
-	if _, err := os.Stat(configPath); os.IsNotExist(err) && configPath == DefaultConfFile {
+	_, err := os.Stat(configPath)
+	if os.IsNotExist(err) && configPath == DefaultConfFile {
 		log.Printf("Default Config File Not Found: %s - trying ./config.yaml", configPath)
 		configPath = "config.yaml"
 	}
@@ -101,7 +105,8 @@ func (c *Config) ParseConfig(configPath string) error {
 		return fmt.Errorf("reading config file: %w", err)
 	}
 
-	if err := yaml.Unmarshal(data, c); err != nil {
+	err = yaml.Unmarshal(data, c)
+	if err != nil {
 		return fmt.Errorf("unmarshaling config file: %w", err)
 	}
 
@@ -127,7 +132,8 @@ func (c *Config) Start() error {
 		ReadHeaderTimeout: c.flags.Timeout,
 	}
 
-	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	err := server.ListenAndServe()
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return fmt.Errorf("web server problem: %w", err)
 	}
 
