@@ -470,3 +470,31 @@ func TestCacheHeader(t *testing.T) {
 		}
 	}
 }
+
+func TestServeHTTPRedirect(t *testing.T) {
+	t.Parallel()
+
+	h, err := handler.New(getTestConfig([]byte(`
+host: example.com
+redir_paths: ["releases"]
+paths:
+  /portmidi:
+    repo: https://github.com/rakyll/portmidi
+    redir: https://github.com/rakyll/portmidi
+`)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/portmidi/releases", nil))
+
+	if rec.Code != http.StatusFound {
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusFound)
+	}
+
+	want := "https://github.com/rakyll/portmidi/releases"
+	if loc := rec.Header().Get("Location"); loc != want {
+		t.Fatalf("Location = %q, want %q", loc, want)
+	}
+}
