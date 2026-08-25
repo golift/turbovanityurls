@@ -23,7 +23,7 @@ src: /source
 cache_max_age: 86400
 
 # This is the path used for badgedata. Most people will unset this to turn off badgedata.
-bd_path: "/bd/"
+bd_path: '/bd/'
 
 # These paths will be redirected if redir is not ""
 # This setting is global, can be set per path too.
@@ -31,13 +31,16 @@ bd_path: "/bd/"
 # the sub-path is then checked for one of these strings.
 # If sub-path also matches, the client is redirected to
 # $redir + $subpath (subpath doesn't contain matched $path)
-redir_paths: ["tar.gz", "wiki", "releases"]
+redir_paths: ['tar.gz', 'wiki', 'releases']
 
 # Paths that get handled by this app.
 paths:
   /badgedata:
     repo: https://github.com/golift/badgedata
     redir: https://github.com/golift/badgedata
+  /goty:
+    repo: https://github.com/golift/goty
+    redir: https://github.com/golift/goty
   /cnfg:
     repo: https://github.com/golift/cnfg
     redir: https://github.com/golift/cnfg
@@ -83,44 +86,57 @@ paths:
   /datacounter:
     repo: https://github.com/golift/datacounter
     redir: https://github.com/golift/datacounter
+  /mulery:
+    repo: https://github.com/golift/mulery
+    redir: https://github.com/golift/mulery
+  /udf:
+    repo: https://github.com/golift/udf
+    redir: https://github.com/golift/udf
+  /codesign:
+    repo: https://github.com/golift/codesign
+    redir: https://github.com/golift/codesign
 
   # No repos.
   # Giving an item a "name" puts it in the Applications list.
   /discord:
     redir: https://discord.gg/YrWnVzjWMC
-    redir_paths: [""]
+    redir_paths: ['']
   /turbovanityurls:
-    name: "Turbo Vanity URLs"
+    name: 'Turbo Vanity URLs'
     redir: https://github.com/golift/turbovanityurls
-    redir_paths: [""]
+    redir_paths: ['']
   /unifi-poller:
-    name: "UnPoller"
     redir: https://github.com/unpoller/unpoller
-    redir_paths: [""]
+    redir_paths: ['']
   /unpoller:
-    name: "UnPoller"
+    name: 'UnPoller'
     redir: https://github.com/unpoller/unpoller
-    redir_paths: [""]
+    redir_paths: ['']
   /secspy:
-    name: "SecSpy"
+    name: 'SecSpy'
     redir: https://github.com/davidnewhall/secspy
-    redir_paths: [""]
+    redir_paths: ['']
   /unpackerr:
-    name: "Unpackerr"
+    name: 'Unpackerr'
     redir: https://github.com/davidnewhall/unpackerr
-    redir_paths: [""]
+    redir_paths: ['']
+  /xt:
+    name: 'eXtractor Tool'
+    repo: https://github.com/Unpackerr/xt
+    redir: https://github.com/Unpackerr/xt
+    description: Recursively decompress archives
   /motifini:
-    name: "Motifini"
+    name: 'Motifini'
     redir: https://github.com/davidnewhall/motifini
-    redir_paths: [""]
+    redir_paths: ['']
   /notifiarr:
-    name: "Notifiarr"
+    name: 'Notifiarr'
     redir: https://github.com/Notifiarr/notifiarr
-    redir_paths: [""]
-  /hello-world:
-    name: "Hello World"
-    redir_paths: [""]
-    redir: https://github.com/golift/application-builder
+    redir_paths: ['']
+  /toolbarr:
+    name: 'Toolbarr'
+    redir: https://github.com/Notifiarr/toolbarr
+    redir_paths: ['']
   /source:
-    redir_paths: [""]
+    redir_paths: ['']
     redir: https://github.com/golift/turbovanityurls
