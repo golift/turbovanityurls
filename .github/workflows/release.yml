@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download release files
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: release
       - uses: golift/upload-packagecloud@v1
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download release files
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: release
       - uses: golift/upload-packagecloud@v1
@@ -97,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download ${{ matrix.files }} Files
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ${{ matrix.files }}
       - name: Publish ${{ matrix.files }} artifacts to github
