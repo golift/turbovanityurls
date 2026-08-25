@@ -23,17 +23,17 @@ jobs:
     env:
       GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # we need the whole thing so we can count commits.
           fetch-depth: '0'
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version: stable
       - name: make-release
         id: release
         run: |
-          sudo apt install -y rpm fakeroot zip debsigs gnupg jq 
+          sudo apt install -y rpm fakeroot zip debsigs gnupg jq
           sudo gem install --no-document fpm
           echo "${GPG_SIGNING_KEY}" | gpg --import -
           go install github.com/davidnewhall/md2roff@v0.0.1
@@ -41,7 +41,7 @@ jobs:
           make release
           source settings.sh ; echo "version=${VERSION}-${ITERATION}" >> $GITHUB_OUTPUT
       - name: upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release
           path: release
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download release files
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: release
       - uses: golift/upload-packagecloud@v1
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download release files
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: release
       - uses: golift/upload-packagecloud@v1
@@ -97,11 +97,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download ${{ matrix.files }} Files
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ${{ matrix.files }}
       - name: Publish ${{ matrix.files }} artifacts to github
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             *.rpm
@@ -118,7 +118,7 @@ jobs:
     name: Deploy ArchLinux AUR
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: '0'
       - name: Deploy Aurch AUR
@@ -132,7 +132,7 @@ jobs:
     name: Deploy Homebrew Formula
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: '0'
       - name: Deploy Homebrew Formula

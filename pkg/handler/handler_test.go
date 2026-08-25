@@ -229,7 +229,7 @@ func TestHandler(t *testing.T) {
 
 		data, err := io.ReadAll(resp.Body)
 
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		s.Close()
 
 		if resp.StatusCode != http.StatusOK {
@@ -284,7 +284,7 @@ func getTestConfig(data []byte) *handler.Config {
 }
 
 func findMeta(data []byte, name string) string {
-	var sep []byte
+	sep := make([]byte, 0, len(name)+11)
 
 	sep = append(sep, `<meta name="`...)
 	sep = append(sep, name...)
@@ -297,12 +297,12 @@ func findMeta(data []byte, name string) string {
 
 	content := data[i+len(sep):]
 
-	j := bytes.IndexByte(content, '"')
-	if j == -1 {
+	before, _, ok := bytes.Cut(content, []byte{'"'})
+	if !ok {
 		return ""
 	}
 
-	return string(content[:j])
+	return string(before)
 }
 
 func TestPathConfigSetFind(t *testing.T) {
@@ -468,5 +468,33 @@ func TestCacheHeader(t *testing.T) {
 		if got != test.cacheControl {
 			t.Errorf("%s: Cache-Control header = %q; want %q", test.name, got, test.cacheControl)
 		}
+	}
+}
+
+func TestServeHTTPRedirect(t *testing.T) {
+	t.Parallel()
+
+	h, err := handler.New(getTestConfig([]byte(`
+host: example.com
+redir_paths: ["releases"]
+paths:
+  /portmidi:
+    repo: https://github.com/rakyll/portmidi
+    redir: https://github.com/rakyll/portmidi
+`)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/portmidi/releases", nil))
+
+	if rec.Code != http.StatusFound {
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusFound)
+	}
+
+	want := "https://github.com/rakyll/portmidi/releases"
+	if loc := rec.Header().Get("Location"); loc != want {
+		t.Fatalf("Location = %q, want %q", loc, want)
 	}
 }

@@ -1,13 +1,36 @@
+version: '2'
 linters:
-  enable-all: true
+  default: all
   disable:
-  # deprecated
-    - execinquery
-    - gomnd
-  # unused
-    - exhaustruct
-    - nlreturn
-    - tagliatelle
-    - varnamelen
-run:
-  timeout: 5m
+    - varnamelen # eventually
+    - nlreturn # no need
+    - exhaustruct_v5 # very noisy
+    - gomodguard # deprecated
+    - wsl # deprecated
+    - exhaustruct # deprecated
+
+  settings:
+    depguard:
+      rules:
+        main:
+          files:
+            - $all
+          allow:
+            - $gostd
+            - golift.io
+            - gopkg.in/yaml.v3
+    tagliatelle:
+      case:
+        rules:
+          yaml: snake
+  exclusions:
+    rules:
+      - path: .+_test.go
+        linters:
+          - goconst
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports

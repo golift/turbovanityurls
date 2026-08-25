@@ -8,7 +8,8 @@ import (
 	"time"
 )
 
-var Funcs = map[string]interface{}{
+// Funcs are template helpers shared by the HTML pages.
+var Funcs = map[string]any{
 	"TrimPrefix":  strings.TrimPrefix,
 	"currentYear": func() string { return strconv.Itoa(time.Now().Year()) },
 	// Add more if you need them.

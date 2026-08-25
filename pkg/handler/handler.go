@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// govanityurls serves Go vanity URLs.
+// Package handler for golift.io/turbovanityurls serves Go vanity URLs.
 package handler
 
 import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"sort"
 	"strings"
 
@@ -92,13 +93,15 @@ var (
 // Host, LogoURL, and IndexTitle come unset.
 // This struct is passed into the vanity template.
 type PathReq struct {
+	*PathConfig
+
 	Host       string
 	Subpath    string
 	IndexTitle string
 	LogoURL    string
-	*PathConfig
 }
 
+// New builds a vanity-URL handler from c.
 func New(c *Config) (*Handler, error) {
 	h := &Handler{Config: c}
 
@@ -116,7 +119,8 @@ func New(c *Config) (*Handler, error) {
 
 		h.Paths[p].setRepoCacheControl(h.CacheAge)
 
-		if err := h.Paths[p].setRepoVCS(); err != nil {
+		err := h.Paths[p].setRepoVCS()
+		if err != nil {
 			return nil, err
 		}
 
@@ -189,7 +193,7 @@ func (h *Handler) NotFound(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) { //nolint:cyclop
-	switch pc := h.PathConfigs.Find(r.URL.Path); {
+	switch pc := h.Find(r.URL.Path); {
 	case pc.PathConfig == nil && r.URL.Path != "/":
 		// Unknown URI
 		h.NotFound(w, r)
@@ -198,13 +202,18 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) { //nolint:c
 		http.Redirect(w, r, h.RedirIndex, http.StatusFound)
 	case pc.PathConfig == nil:
 		// Index page template.
-		if err := templates.Index.Execute(w, &h.Config); err != nil {
+		err := templates.Index.Execute(w, &h.Config)
+		if err != nil {
 			http.Error(w, "cannot render the page", http.StatusInternalServerError)
 		}
 	case pc.RedirectablePath():
-		// Redirect for file downloads.
-		redirTo := pc.Redir + strings.TrimPrefix(r.URL.Path, pc.Path)
-		http.Redirect(w, r, redirTo, http.StatusFound)
+		loc, ok := joinRedirect(pc.Redir, r.URL.Path, pc.Path)
+		if !ok {
+			h.NotFound(w, r)
+			break
+		}
+
+		http.Redirect(w, r, loc, http.StatusFound)
 	case pc.Repo == "":
 		// Repo is not set and no paths to redirect, so we're done.
 		h.NotFound(w, r)
@@ -221,7 +230,8 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) { //nolint:c
 			templ = templates.GoGet
 		}
 
-		if err := templ.Execute(w, &pc); err != nil {
+		err := templ.Execute(w, &pc)
+		if err != nil {
 			http.Error(w, "cannot render the page", http.StatusInternalServerError)
 		}
 	}
@@ -242,6 +252,52 @@ func (p *PathReq) RedirectablePath() bool {
 	}
 
 	return false
+}
+
+// joinRedirect appends the request path after vanityPath onto a configured
+// http(s) base URL. The result must keep that base's scheme, host, and path
+// prefix so a crafted path cannot turn this into an open redirect.
+func joinRedirect(base, reqPath, vanityPath string) (string, bool) {
+	parsed, ok := parseHTTPBase(base)
+	if !ok {
+		return "", false
+	}
+
+	scheme, host, basePath := parsed.Scheme, parsed.Host, strings.TrimSuffix(parsed.Path, "/")
+	suffix := strings.TrimPrefix(strings.TrimPrefix(reqPath, vanityPath), "/")
+
+	if suffix != "" {
+		parsed = parsed.JoinPath(suffix)
+	}
+
+	if !sameOriginPath(parsed, scheme, host, basePath) {
+		return "", false
+	}
+
+	return parsed.String(), true
+}
+
+// parseHTTPBase parses a base URL and returns a url.URL and a boolean indicating if the parse was successful.
+func parseHTTPBase(base string) (*url.URL, bool) {
+	parsed, err := url.Parse(base)
+	if err != nil || parsed.Host == "" {
+		return nil, false
+	}
+
+	if parsed.Scheme != "http" && parsed.Scheme != "https" {
+		return nil, false
+	}
+
+	return parsed, true
+}
+
+// sameOriginPath checks if a url.URL is the same origin as a given scheme, host, and base path.
+func sameOriginPath(got *url.URL, scheme, host, basePath string) bool {
+	if got.Scheme != scheme || !strings.EqualFold(got.Host, host) || got.User != nil {
+		return false
+	}
+
+	return basePath == "" || got.Path == basePath || strings.HasPrefix(got.Path, basePath+"/")
 }
 
 // ImportPath is used in the template to generate the import path.
