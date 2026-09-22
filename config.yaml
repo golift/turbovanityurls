@@ -74,6 +74,9 @@ paths:
   /xtractr:
     repo: https://github.com/golift/xtractr
     redir: https://github.com/golift/xtractr
+  /asar:
+    repo: https://github.com/golift/asar
+    redir: https://github.com/golift/asar
   /qbit:
     repo: https://github.com/golift/qbit
     redir: https://github.com/golift/qbit
