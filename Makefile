@@ -41,7 +41,7 @@ define PACKAGE_ARGS
 --freebsd-origin "$(SOURCE_URL)"
 endef
 
-# rpm is wierd and changes - to _ in versions.
+# rpm is weird and changes - to _ in versions.
 RPMVERSION:=$(shell echo $(VERSION) | tr -- - _)
 
 VERSION_LDFLAGS:= -X \"main.Branch=$(BRANCH) ($(COMMIT))\" \
