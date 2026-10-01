@@ -1,5 +1,7 @@
 golift.io/badgedata v0.0.4 h1:L73vHn9g1kLwILXzn/0r6ckfO7wY/6y+WMCTTrZr89s=
 golift.io/badgedata v0.0.4/go.mod h1:PMsv2IspA5Tpqv0K2xYZ3Tn5tvKKrvATEApC0k3xTyE=
+golift.io/badgedata v0.1.0 h1:683x3XrCn1Hih5xUaqR0o5+Qa14WpnkiwD32YZywkGg=
+golift.io/badgedata v0.1.0/go.mod h1:lvH0Y/kerqddkdKe/tcY/BOMbpJtB8NxvxB7/eHhzSw=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
